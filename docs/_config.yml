@@ -1,0 +1,29 @@
+title: zfetch
+description: A fast, modern system information tool written in Zig
+theme: jekyll-theme-cayman
+baseurl: "/zfetch"
+url: "https://santosr2.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Installation
+    url: /installation
+  - title: Usage
+    url: /usage
+  - title: Platform Support
+    url: /platforms
+  - title: Contributing
+    url: /contributing

@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-linux
+            artifact: zfetch-x86_64-linux
+          - os: ubuntu-latest
+            target: aarch64-linux
+            artifact: zfetch-aarch64-linux
+          - os: macos-latest
+            target: x86_64-macos
+            artifact: zfetch-x86_64-macos
+          - os: macos-latest
+            target: aarch64-macos
+            artifact: zfetch-aarch64-macos
+          - os: windows-latest
+            target: x86_64-windows
+            artifact: zfetch-x86_64-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v1
+        with:
+          version: 0.14.0
+
+      - name: Build
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast
+
+      - name: Create archive (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd zig-out/bin
+          tar -czvf ../../${{ matrix.artifact }}.tar.gz zfetch*
+
+      - name: Create archive (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd zig-out/bin
+          Compress-Archive -Path zfetch* -DestinationPath ../../${{ matrix.artifact }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}.tar.gz
+            ${{ matrix.artifact }}.zip
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: find artifacts -type f
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

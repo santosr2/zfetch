@@ -1,12 +1,12 @@
 .{
     .name = .zfetch,
-    .version = "0.0.0",
+    .version = "0.1.0",
     .fingerprint = 0x5fb01b5abcaf00bb,
     .minimum_zig_version = "0.14.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
         "build.zig.zon",
-        "zfetch.zig",
+        "src",
     },
 }

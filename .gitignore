@@ -1,2 +1,18 @@
+# Zig build artifacts
 .zig-cache/
 zig-out/
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Jekyll (docs)
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
